@@ -1,0 +1,16 @@
+# 运行时与机器相关
+state/
+config/*.local.json
+watcher/launchd/*.rendered.plist
+*.log
+
+# 敏感
+.env
+.env.*
+*token*
+*secret*
+
+# 杂项
+__pycache__/
+node_modules/
+.DS_Store

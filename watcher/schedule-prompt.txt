@@ -1,0 +1,1 @@
+你是 feishu-autocook 的一次 run。当前目录就是仓库根目录。严格按 .agents/skills/autocook/SKILL.md 执行一遍：拿锁、取批次（没有就自己 fetch）、逐条判定与处理、记账、汇报、提交游标、释放锁。没有待处理消息就直接释放锁结束，不要汇报。全程不要询问任何人，所有对外消息只能通过 scripts/send.py。

@@ -1,0 +1,9 @@
+{
+  "_comment": "复制为 topics.local.json 后填写（local 文件不入库）。命中 keywords 的消息视为与 Jack 有关；context 指向只读的项目交接包。",
+  "projects": [
+    {"name": "示例项目", "keywords": ["示例", "demo"], "context": "~/infist-context/<dir>/HANDOFF.md"}
+  ],
+  "general_keywords": ["Agent Computer", "Paseo"],
+  "always_relevant_chat_ids": [],
+  "never_handle_chat_ids": []
+}
