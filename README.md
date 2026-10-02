@@ -32,8 +32,8 @@ state/         游标、批次、开环、决策日志、锁（不入库）
 
 ```sh
 cp config/topics.example.json config/topics.local.json   # 填项目关键词
-# 创建 schedule（--every 不能与 --timezone 同用），并把 id 写进本机配置
-paseo schedule create --every 30m --provider claude --mode bypassPermissions \
+# 创建 schedule（Auto 模式：不阻塞等人，但由分类器拦下危险动作；--every 不能与 --timezone 同用）
+paseo schedule create --every 30m --provider claude --mode auto \
   --cwd "$PWD" --name feishu-autocook --json "$(cat watcher/schedule-prompt.txt)" \
   | python3 -c 'import sys,json; d=json.load(sys.stdin); s=d.get("schedule",d); json.dump({"scheduleId": s["id"]}, open("config/paseo.local.json","w"), indent=1); print(s["id"])'
 ./watcher/install.sh            # 渲染并加载 launchd：watcher 每 60s，health 每 15min
