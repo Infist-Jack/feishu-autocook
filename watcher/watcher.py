@@ -38,6 +38,7 @@ def lock_held():
 
 
 def trigger_run():
+    """触发一次 schedule run。run-once 可能阻塞到 run 结束，所以先记账、再分离子进程，不等待。"""
     cfg = load_json(ROOT / "config" / "paseo.local.json", {})
     sid = cfg.get("scheduleId")
     if not sid or sid.startswith("sch_xxx"):
@@ -48,14 +49,18 @@ def trigger_run():
     cool = int(POLICY.get("watcher_trigger_cooldown_seconds", 180))
     if last and (now() - parse_iso(last)).total_seconds() < cool:
         return False
-    code, out, err = sh(["paseo", "schedule", "run-once", sid, "--json"], timeout=60)
     hb["last_trigger"] = iso(now())
-    hb["last_trigger_ok"] = code == 0
     save_json(HEARTBEAT, hb)
-    append_jsonl(WLOG, {"ts": iso(now()), "event": "trigger", "ok": code == 0, "out": (out or err)[:300]})
-    if code != 0:
-        notify_alert("paseo", "paseo schedule run-once 失败：%s" % (err or out)[:200])
-    return code == 0
+    append_jsonl(WLOG, {"ts": iso(now()), "event": "trigger", "schedule": sid})
+    try:
+        logf = open(STATE / "trigger.log", "a")
+        subprocess.Popen(["paseo", "schedule", "run-once", sid, "--json"], stdin=subprocess.DEVNULL,
+                         stdout=logf, stderr=logf, start_new_session=True)
+    except Exception as e:  # paseo 不在 PATH 等
+        append_jsonl(WLOG, {"ts": iso(now()), "event": "trigger_error", "error": str(e)[:200]})
+        notify_alert("paseo", "paseo schedule run-once 启动失败：%s" % str(e)[:200])
+        return False
+    return True
 
 
 def tick():
