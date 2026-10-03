@@ -7,7 +7,7 @@ import argparse
 import json
 import sys
 
-from common import (DONE, INBOX, POLICY, STATE, iso, is_auth_error, jack_open_id, lark, load_json, log, now,
+from common import (DONE, INBOX, POLICY, STATE, iso, is_auth_error, jack_open_id, own_app_id, lark, load_json, log, now,
                     parse_create_time, parse_iso, save_json, chat_names, topic_hits)
 import datetime as dt
 
@@ -61,6 +61,8 @@ def main():
     a = ap.parse_args()
 
     me = jack_open_id()
+    own_app = own_app_id()
+    include_app = bool(POLICY.get("include_app_senders", True))
     cursor = load_json(STATE / "cursor.json", {})
     if a.since:
         since = parse_iso(a.since)
@@ -86,7 +88,10 @@ def main():
         if m.get("deleted"):
             continue
         s = m.get("sender") or {}
-        if s.get("id") == me or s.get("sender_type") not in (None, "", "user"):
+        if s.get("id") == me:
+            continue
+        is_app = s.get("sender_type") not in (None, "", "user")
+        if is_app and (not include_app or (own_app and s.get("id") == own_app)):
             continue
         if m.get("msg_type") not in HUMAN_TYPES:
             continue
@@ -110,6 +115,7 @@ def main():
         m["_chat_name"] = info.get("name") or ("单聊" if m.get("chat_type") == "p2p" else "")
         m["_external"] = info.get("external", False)
         m["_mentions_me"] = any((x or {}).get("id") == me for x in (m.get("mentions") or []))
+        m["_from_app"] = (m.get("sender") or {}).get("sender_type") not in (None, "", "user")
         content = m.get("content") if isinstance(m.get("content"), str) else json.dumps(m.get("content"), ensure_ascii=False)
         m["_topic_hits"] = topic_hits(content)
     cands.sort(key=lambda x: x["_create_iso"])

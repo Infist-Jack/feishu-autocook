@@ -14,7 +14,12 @@ description: feishu-autocook 的判定原则：一条消息和 Jack 有没有关
 - 命中 `config/topics.local.json` 里 Jack 负责项目的关键词（context 的 `topic_hits`）。
 - 直接向 Jack 提问、派活、要东西。
 
-无关：其余。只记一行 decision（level=irrelevant），不回复、不打扰对方。bot/应用发的消息（sender_type=app）默认无关。
+无关：其余。只记一行 decision（level=irrelevant），不回复、不打扰对方。
+
+bot/应用发的消息（context 里 `message.sender.sender_type` 为 app）按内容判，不按发送者判：
+- 纯通知类（打车、合同、账号安全、日历提醒、审批流转）：无关，进摘要。
+- Jack 在测或在建的 bot 的输出（群名含"测"或"Bot"、命中项目关键词、或 Jack 近期在该群发过言）：有关。这里"处理"的含义是替 Jack 看结果：核对数据是否自洽、输出是否符合预期、有没有报错或异常，结论写进汇报（正常就一行，异常标出来并给判断）。
+- 永远不要回复 bot，除非它明确在等一条指令且 Jack 已经在群里给过同类指令。
 
 ## 二、有关的，只问一个问题
 

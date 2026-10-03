@@ -7,9 +7,13 @@
   "max_outbound_per_run": 15,
   "max_followups_per_thread": 1,
   "signature": "（agent 代 Jack 处理）",
-  "digest_hours": [9, 18],
+  "digest_hours": [
+    9,
+    18
+  ],
   "timezone": "Asia/Singapore",
   "alert_cooldown_seconds": 3600,
   "watcher_trigger_cooldown_seconds": 180,
-  "watcher_stale_seconds": 900
+  "watcher_stale_seconds": 900,
+  "include_app_senders": true
 }

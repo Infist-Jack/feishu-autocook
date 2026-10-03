@@ -126,25 +126,37 @@ def is_auth_error(res):
     return t in ("auth", "missing_scope", "unauthorized") or "token" in msg and ("expired" in msg or "invalid" in msg)
 
 
-def jack_open_id():
+def _identity():
+    """Jack 的 open_id 与本 CLI 应用的 app_id，缓存 6 小时。"""
     cache = STATE / "identity.json"
     ident = load_json(cache, {})
     if ident.get("open_id") and ident.get("fetched_at"):
         age = (now() - parse_iso(ident["fetched_at"])).total_seconds()
         if age < 6 * 3600:
-            return ident["open_id"]
+            return ident
     try:
         p = subprocess.run(["lark-cli", "auth", "status"], stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=30)
         d = json.loads(p.stdout)
         oid = (((d.get("identities") or {}).get("user") or {}).get("openId")) or d.get("openId")
+        app = d.get("appId")
     except Exception:
-        oid = None
+        oid, app = None, None
     if oid:
-        save_json(cache, {"open_id": oid, "fetched_at": iso(now())})
-        return oid
+        ident = {"open_id": oid, "app_id": app, "fetched_at": iso(now())}
+        save_json(cache, ident)
+        return ident
     if ident.get("open_id"):
-        return ident["open_id"]
+        return ident
     raise SystemExit("无法确定 Jack 的 open_id：lark-cli auth status 失败")
+
+
+def jack_open_id():
+    return _identity()["open_id"]
+
+
+def own_app_id():
+    """autocook 自己的 bot 应用 id；它发给 Jack 的汇报不能再被当成待处理消息。"""
+    return _identity().get("app_id")
 
 
 def chat_names(refresh=False):
