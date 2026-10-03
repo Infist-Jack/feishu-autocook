@@ -33,7 +33,7 @@ state/         游标、批次、开环、决策日志、锁（不入库）
 ```sh
 cp config/topics.example.json config/topics.local.json   # 填项目关键词
 # 创建 schedule（Auto 模式）。cadence 只是兜底，每天一次；真正的触发来自 watcher 的 run-once
-paseo schedule create --cron "0 9 * * *" --timezone Asia/Singapore --provider claude --mode auto \
+paseo schedule create --cron "0 8 * * *" --timezone Asia/Singapore --provider claude --mode auto \
   --cwd "$PWD" --name feishu-autocook --json "$(cat watcher/schedule-prompt.txt)" \
   | python3 -c 'import sys,json; d=json.load(sys.stdin); s=d.get("schedule",d); json.dump({"scheduleId": s["id"]}, open("config/paseo.local.json","w"), indent=1); print(s["id"])'
 ./watcher/install.sh            # 渲染并加载 launchd：watcher 每 60s，health 每 15min
