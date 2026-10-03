@@ -39,4 +39,4 @@ paseo schedule create --every 30m --provider claude --mode auto \
 ./watcher/install.sh            # 渲染并加载 launchd：watcher 每 60s，health 每 15min
 ```
 
-`config/policy.json` 的 `mode` 默认 `shadow`：只记录拟执行动作、汇报给 Jack，不对外发送。校准一周后改为 `live`。
+`config/policy.json` 的 `mode` 默认 `live`，会以 Jack 身份对外发送。想先观察判定再放开，改成 `shadow`：只记录拟执行动作并汇报给 Jack，不对外发送。

@@ -17,7 +17,7 @@
 - 触发：`watcher/watcher.py tick` 由 launchd 每 60 秒跑一次，发现"未读且超过 10 分钟"的消息就写批次到 `state/inbox/` 并触发 `paseo schedule run-once`。
 - 执行：paseo schedule 起一个 Claude agent，cwd 是本仓库，按 autocook skill 跑一遍后退出；schedule 自带 30 分钟 cadence 兜底。
 - 汇报：bot 身份私聊 Jack；告警同一通道。
-- 模式：`config/policy.json` 的 `mode` 为 `shadow` 时只记录拟执行动作、不对外发送；改成 `live` 才真正发送。
+- 模式：`config/policy.json` 的 `mode` 默认 `live`，真正以 Jack 身份发送；改成 `shadow` 则只记录拟执行动作、不对外发送。
 
 ## 手动跑一次
 

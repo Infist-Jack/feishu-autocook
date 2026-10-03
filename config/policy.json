@@ -1,5 +1,5 @@
 {
-  "mode": "shadow",
+  "mode": "live",
   "min_unread_seconds": 600,
   "search_overlap_seconds": 900,
   "initial_lookback_seconds": 7200,
